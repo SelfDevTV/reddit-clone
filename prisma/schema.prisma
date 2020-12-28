@@ -10,9 +10,8 @@ generator client {
   provider = "prisma-client-js"
 }
 
-
 model Account {
-  id                 Int       @default(autoincrement()) @id
+  id                 Int       @id @default(autoincrement())
   compoundId         String    @unique @map(name: "compound_id")
   userId             Int       @map(name: "user_id")
   providerType       String    @map(name: "provider_type")
@@ -24,15 +23,15 @@ model Account {
   createdAt          DateTime  @default(now()) @map(name: "created_at")
   updatedAt          DateTime  @default(now()) @map(name: "updated_at")
 
+
   @@index([providerAccountId], name: "providerAccountId")
   @@index([providerId], name: "providerId")
   @@index([userId], name: "userId")
-
   @@map(name: "accounts")
 }
 
 model Session {
-  id           Int      @default(autoincrement()) @id
+  id           Int      @id @default(autoincrement())
   userId       Int      @map(name: "user_id")
   expires      DateTime
   sessionToken String   @unique @map(name: "session_token")
@@ -44,56 +43,66 @@ model Session {
 }
 
 model User {
-  id            Int       @default(autoincrement()) @id
+  id            Int       @id @default(autoincrement())
   name          String?
   email         String?   @unique
   emailVerified DateTime? @map(name: "email_verified")
   image         String?
   createdAt     DateTime  @default(now()) @map(name: "created_at")
   updatedAt     DateTime  @default(now()) @map(name: "updated_at")
+  posts         Post[]
+  comments      Comment[]
+  votes         Vote[]
 
   @@map(name: "users")
 }
 
 model VerificationRequest {
-  id         Int      @default(autoincrement()) @id
+  id         Int      @id @default(autoincrement())
   identifier String
   token      String   @unique
   expires    DateTime
-  createdAt  DateTime  @default(now()) @map(name: "created_at")
-  updatedAt  DateTime  @default(now()) @map(name: "updated_at")
+  createdAt  DateTime @default(now()) @map(name: "created_at")
+  updatedAt  DateTime @default(now()) @map(name: "updated_at")
 
   @@map(name: "verification_requests")
 }
 
 model Subreddit {
-  id            Int       @default(autoincrement()) @id
-  name String @unique
+  id    Int    @id @default(autoincrement())
+  name  String @unique
   posts Post[]
 }
 
 model Post {
-  id Int @default(autoincrement()) @id
-  title String
-  body String
-  subreddit Subreddit
-  comments Comment[]
-  user User
-  votes Vote[]
+  id          Int       @id @default(autoincrement())
+  title       String
+  body        String
+  subreddit   Subreddit @relation(fields: [subredditId], references: [id])
+  comments    Comment[]
+  user        User      @relation(fields: [userId], references: [id])
+  votes       Vote[]
+  subredditId Int
+  userId      Int
 }
 
 model Comment {
-  id Int @default(autoincrement()) @id
-  body String
-  user User
-  votes Vote[]
-  post Post
+  id     Int    @id @default(autoincrement())
+  body   String
+  user   User   @relation(fields: [userId], references: [id])
+  votes  Vote[]
+  post   Post   @relation(fields: [postId], references: [id])
+  userId Int
+  postId Int
 }
 
 model Vote {
-  id Int @default(autoincrement()) @id
+  id         Int      @id @default(autoincrement())
   isDownvote Boolean
-  user User
-  post Post?
-  comment Comment?
+  user       User     @relation(fields: [userId], references: [id])
+  post       Post?    @relation(fields: [postId], references: [id])
+  comment    Comment? @relation(fields: [commentId], references: [id])
+  userId     Int
+  postId     Int?
+  commentId  Int?
 }
