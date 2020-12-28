@@ -65,3 +65,35 @@ model VerificationRequest {
 
   @@map(name: "verification_requests")
 }
+
+model Subreddit {
+  id            Int       @default(autoincrement()) @id
+  name String @unique
+  posts Post[]
+}
+
+model Post {
+  id Int @default(autoincrement()) @id
+  title String
+  body String
+  subreddit Subreddit
+  comments Comment[]
+  user User
+  votes Vote[]
+}
+
+model Comment {
+  id Int @default(autoincrement()) @id
+  body String
+  user User
+  votes Vote[]
+  post Post
+}
+
+model Vote {
+  id Int @default(autoincrement()) @id
+  isDownvote Boolean
+  user User
+  post Post?
+  comment Comment?
+}
