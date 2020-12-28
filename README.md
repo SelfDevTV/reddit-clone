@@ -1,4 +1,4 @@
-# React-Clone
+# Reddit-Clone
 
 Whats up everyone!
 
