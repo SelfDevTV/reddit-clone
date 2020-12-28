@@ -12,5 +12,5 @@ We will build a reddit-clone with the latest and greatest technology including:
 - Prisma - [Prisma](https://www.prisma.io/)
 - AWS - [AWS](https://aws.amazon.com/?nc1=h_ls)
 
-This will get updated when the poject moves forward and will contain the link to a working live example...
+Live Version of the project: https://reddit-clone-teal.vercel.app/
 Stay tune!
