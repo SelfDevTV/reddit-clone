@@ -33,12 +33,16 @@ export default function Nav() {
   return (
     <nav className="flex items-center justify-between py-4 bg-gray-600">
       <div className="flex items-center">
-        <div className="w-12 h-12 rounded-full bg-red-300 mx-4" />
         <Link href="/">
-          <a className="text-white text-2xl font-bold">reddit</a>
+          <div className="w-12 h-12 rounded-full bg-red-300 mx-4 cursor-pointer" />
+        </Link>
+        <Link href="/">
+          <a className="text-white text-2xl font-bold hidden md:block hover:text-indigo-200">
+            reddit
+          </a>
         </Link>
       </div>
-      <div className="w-4/12">
+      <div className="md:w-1/3 w-full mr-4 md:mr-0">
         <Select
           options={subToOptions()}
           onChange={(option) => {
@@ -47,10 +51,10 @@ export default function Nav() {
         />
       </div>
 
-      <h3 className="text-white font-bold text-xl">
+      <h3 className="text-white font-bold text-xl hidden md:block">
         Welcome {loading ? "" : session?.user?.name}
       </h3>
-      <div className="text-white font-bold mr-4 text-xl">
+      <div className="text-white font-bold mr-4 text-xl hover:text-indigo-200">
         {!session && <button onClick={signIn}>Login</button>}
         {session && <button onClick={signOut}>Logout</button>}
       </div>
