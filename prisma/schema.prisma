@@ -43,17 +43,17 @@ model Session {
 }
 
 model User {
-  id            Int       @id @default(autoincrement())
+  id            Int         @id @default(autoincrement())
   name          String?
-  email         String?   @unique
-  emailVerified DateTime? @map(name: "email_verified")
+  email         String?     @unique
+  emailVerified DateTime?   @map(name: "email_verified")
   image         String?
-  createdAt     DateTime  @default(now()) @map(name: "created_at")
-  updatedAt     DateTime  @default(now()) @map(name: "updated_at")
+  createdAt     DateTime    @default(now()) @map(name: "created_at")
+  updatedAt     DateTime    @default(now()) @map(name: "updated_at")
   posts         Post[]
   comments      Comment[]
   votes         Vote[]
-  joinedSubs Subreddit[]
+  joinedSubs    Subreddit[]
 
   @@map(name: "users")
 }
@@ -70,12 +70,12 @@ model VerificationRequest {
 }
 
 model Subreddit {
-  id    Int    @id @default(autoincrement())
-  name  String @unique
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
   displayName String
   infoBoxText String
-  createdAt DateTime @default(now())
-  posts Post[]
+  createdAt   DateTime @default(now())
+  posts       Post[]
   joinedUsers User[]
 }
 
@@ -89,8 +89,8 @@ model Post {
   votes       Vote[]
   subredditId Int
   userId      Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 model Comment {
@@ -104,14 +104,14 @@ model Comment {
 }
 
 model Vote {
-  id         Int      @id @default(autoincrement())
-  voteType   VoteType
-  user       User     @relation(fields: [userId], references: [id])
-  post       Post?    @relation(fields: [postId], references: [id])
-  comment    Comment? @relation(fields: [commentId], references: [id])
-  userId     Int
-  postId     Int?
-  commentId  Int?
+  id        Int      @id @default(autoincrement())
+  voteType  VoteType
+  user      User     @relation(fields: [userId], references: [id])
+  post      Post?    @relation(fields: [postId], references: [id])
+  comment   Comment? @relation(fields: [commentId], references: [id])
+  userId    Int
+  postId    Int?
+  commentId Int?
 }
 
 enum VoteType {

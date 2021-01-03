@@ -11,6 +11,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         posts: {
           include: { subreddit: true, user: true },
         },
+        joinedUsers: true
       },
     });
 
