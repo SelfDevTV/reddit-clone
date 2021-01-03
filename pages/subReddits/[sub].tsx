@@ -1,10 +1,17 @@
 import { useRouter } from "next/router";
 import Link from "next/link";
 import Layout from "../../components/layout";
+import { Prisma } from "@prisma/client";
 
-const SubReddit = () => {
+type SubWithPosts = Prisma.SubredditGetPayload<{
+  include: { posts: { include: { user: true; subreddit: true } } };
+}>;
+
+const SubReddit = ({ fullSub }: { fullSub: SubWithPosts }) => {
   const router = useRouter();
   const { sub } = router.query;
+
+  console.log(fullSub);
 
   // TODO: We need to get these variables from our db
   const joined = true;
@@ -30,13 +37,13 @@ const SubReddit = () => {
           <div className="w-16 absolute h-16 bottom-6 rounded-full bg-green-400 border-white border-2" />
           <div className="flex items-center">
             <h4 className="ml-20 text-2xl font-bold text-gray-700">
-              {displayName}
+              {fullSub.displayName}
             </h4>
             <button className="ml-4 text-sm text-green-400 font-semibold border border-green-400 py-1 px-3 rounded-md focus:outline-none">
               {joined ? "JOINED" : "JOIN"}
             </button>
           </div>
-          <p className="ml-20 text-sm text-gray-600">r/nextjs</p>
+          <p className="ml-20 text-sm text-gray-600">r/{fullSub.name}</p>
         </div>
       </div>
       <div className="bg-gray-300">
@@ -74,7 +81,7 @@ const SubReddit = () => {
               <p className="text-sm text-gray-900 font-bold">About Community</p>
             </div>
             <div className="p-2">
-              <p>{about}</p>
+              <p>{fullSub.infoBoxText}</p>
               <div className="flex w-full mt-2 font-semibold">
                 <div className="w-full">
                   <p>4.1k</p>
@@ -100,5 +107,20 @@ const SubReddit = () => {
     </Layout>
   );
 };
+
+export async function getServerSideProps(ctx) {
+  //ctx.query.sub
+
+  const res = await fetch(
+    `${process.env.NEXTAUTH_URL}/api/subreddit/findSubreddit?name=${ctx.query.sub}`
+  );
+  const fullSub = await res.json();
+
+  return {
+    props: {
+      fullSub,
+    },
+  };
+}
 
 export default SubReddit;
