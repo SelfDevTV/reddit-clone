@@ -1,20 +1,25 @@
 import { useRouter } from "next/router";
 import Link from "next/link";
 import Layout from "../../components/layout";
-import { Prisma } from "@prisma/client";
+import { Prisma, User } from "@prisma/client";
+import { useSession } from "next-auth/client"
+import Moment from 'react-moment';
+import 'moment-timezone';
+import SubredditPost from "../../components/subredditPost";
 
 type SubWithPosts = Prisma.SubredditGetPayload<{
-  include: { posts: { include: { user: true; subreddit: true } } };
+  include: { posts: { include: { user: true; subreddit: true } }, joinedUsers: true };
 }>;
 
 const SubReddit = ({ fullSub }: { fullSub: SubWithPosts }) => {
   const router = useRouter();
   const { sub } = router.query;
+  const [session, loading] = useSession();
 
-  console.log(fullSub);
+
 
   // TODO: We need to get these variables from our db
-  const joined = true;
+  const joined = fullSub.joinedUsers.filter((user: User) => user.name === session.user.name).length > 0
   const displayName = "Next.js";
   const about = "Next.js is the React framework by Vercel.";
   const members = 4100; // TODO: Create a helper function that transforms it into 4.1k
@@ -47,32 +52,15 @@ const SubReddit = ({ fullSub }: { fullSub: SubWithPosts }) => {
         </div>
       </div>
       <div className="bg-gray-300">
-        <div className="flex container mx-auto py-4 px-4">
+        <div className="flex container mx-auto py-4 px-4 items-start">
           {/* Left Column (Posts) */}
           <div className="w-2/3">
-            <button className="w-full py-2 bg-white rounded-md shadow-sm hover:shadow-lg outline-none focus:outline-none">
+            <button className="w-full py-3 text-xl font-bold bg-white rounded-md shadow-sm hover:shadow-lg outline-none focus:outline-none">
               Create Post
             </button>
-            <div className="w-full bg-white  rounded-md p-4 mt-4 ">
-              <div className="flex">
-                <div className="flex flex-col">
-                  <p>Upvote Button</p>
-                  <p>Upvote Count</p>
-                  <p>Downvote Button</p>
-                </div>
-                <div>
-                  <p>Posted by username</p>
-                  <p>Post Title</p>
-                  <p>Post Preview</p>
-                  <div>
-                    <p>
-                      {/*comment icon */} {/*comment count*/} comments
-                    </p>
-                    <p>Share</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+            {
+              fullSub.posts.map(post => <SubredditPost post={post} />)
+            }
           </div>
 
           {/* >Right Column (sidebar) */}
@@ -84,20 +72,20 @@ const SubReddit = ({ fullSub }: { fullSub: SubWithPosts }) => {
               <p>{fullSub.infoBoxText}</p>
               <div className="flex w-full mt-2 font-semibold">
                 <div className="w-full">
-                  <p>4.1k</p>
+                  <p>{fullSub.joinedUsers.length}</p>
                   <p className="text-sm">Members</p>
                 </div>
                 <div className="w-full">
-                  <p>19</p>
-                  <p className="text-sm">Online</p>
+                  <p>{fullSub.posts.length}</p>
+                  <p className="text-sm">total Posts</p>
                 </div>
               </div>
               <div className="w-full h-px bg-gray-300 my-4" />
               <p className="text-md mb-4">
                 <b>Created - </b>{" "}
-                {created.toLocaleDateString("en-US", dateOptions)}
+                <Moment format="YYYY/MM/DD">{fullSub.createdAt}</Moment>
               </p>
-              <button className="focus:outline-none rounded-md w-full py-1 text-gray-900 font-semibold bg-green-400">
+              <button className="focus:outline-none rounded-md w-full py-3 text-gray-900 font-semibold bg-green-400">
                 CREATE POST
               </button>
             </div>

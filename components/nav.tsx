@@ -31,13 +31,13 @@ export default function Nav() {
   };
 
   return (
-    <nav className="flex items-center justify-between py-4 bg-gray-600">
+    <nav className="flex items-center justify-between py-4 bg-white">
       <div className="flex items-center">
         <Link href="/">
           <div className="w-12 h-12 rounded-full bg-red-300 mx-4 cursor-pointer" />
         </Link>
         <Link href="/">
-          <a className="text-white text-2xl font-bold hidden md:block hover:text-indigo-200">
+          <a className="text-gray-700 text-2xl font-bold hidden md:block hover:text-indigo-200">
             reddit
           </a>
         </Link>
@@ -51,10 +51,10 @@ export default function Nav() {
         />
       </div>
 
-      <h3 className="text-white font-bold text-xl hidden md:block">
+      <h3 className="text-gray-700 font-bold text-xl hidden md:block">
         Welcome {loading ? "" : session?.user?.name}
       </h3>
-      <div className="text-white font-bold mr-4 text-xl hover:text-indigo-200">
+      <div className="text-gray-700 font-bold mr-4 text-xl hover:text-indigo-200">
         {!session && <button onClick={signIn}>Login</button>}
         {session && <button onClick={signOut}>Logout</button>}
       </div>
