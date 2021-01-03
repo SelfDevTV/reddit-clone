@@ -53,6 +53,7 @@ model User {
   posts         Post[]
   comments      Comment[]
   votes         Vote[]
+  joinedSubs Subreddit[]
 
   @@map(name: "users")
 }
@@ -71,7 +72,11 @@ model VerificationRequest {
 model Subreddit {
   id    Int    @id @default(autoincrement())
   name  String @unique
+  displayName String
+  infoBoxText String
+  createdAt DateTime @default(now())
   posts Post[]
+  joinedUsers User[]
 }
 
 model Post {
@@ -84,6 +89,8 @@ model Post {
   votes       Vote[]
   subredditId Int
   userId      Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Comment {
@@ -98,11 +105,16 @@ model Comment {
 
 model Vote {
   id         Int      @id @default(autoincrement())
-  isDownvote Boolean
+  voteType   VoteType
   user       User     @relation(fields: [userId], references: [id])
   post       Post?    @relation(fields: [postId], references: [id])
   comment    Comment? @relation(fields: [commentId], references: [id])
   userId     Int
   postId     Int?
   commentId  Int?
+}
+
+enum VoteType {
+  UPVOTE
+  DOWNVOTE
 }
