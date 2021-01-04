@@ -1,7 +1,6 @@
 import { useRouter } from "next/router";
-import Link from "next/link";
 import Layout from "../../components/layout";
-import { Prisma, User } from "@prisma/client";
+import { User } from "@prisma/client";
 import { useSession } from "next-auth/client";
 import Moment from "react-moment";
 import "moment-timezone";
@@ -12,7 +11,7 @@ import { fetchData } from "../../utils/utils";
 const SubReddit = (props) => {
   const router = useRouter();
   const { sub } = router.query;
-  const [session, loading] = useSession();
+  const [session] = useSession();
 
   const { data: fullSub, error } = useSWR(
     `/api/subreddit/findSubreddit?name=${sub}`,
@@ -22,19 +21,18 @@ const SubReddit = (props) => {
     }
   );
 
-  // TODO: We need to get these variables from our db
+  // has the user joined the subreddit?
   const joined =
     fullSub.joinedUsers.filter((user: User) => user.name === session?.user.name)
       .length > 0;
 
-  const dateOptions = {
-    // this is for better format of the date( we use it below)
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  };
-
+  if (error) {
+    return (
+      <Layout>
+        <h1>{error.message}</h1>
+      </Layout>
+    );
+  }
   return (
     <Layout>
       <div className="h-16  bg-green-400" />
@@ -98,8 +96,6 @@ const SubReddit = (props) => {
 };
 
 export async function getServerSideProps(ctx) {
-  //ctx.query.sub
-
   const url = `${process.env.NEXTAUTH_URL}/api/subreddit/findSubreddit?name=${ctx.query.sub}`;
   const fullSub = await fetchData(url);
 

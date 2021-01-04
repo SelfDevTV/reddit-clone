@@ -1,14 +1,13 @@
 import Link from "next/link";
 import Select from "react-select";
 import { useSession, signIn, signOut } from "next-auth/client";
-import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import useSWR from "swr";
 import { fetchData } from "../utils/utils";
 
 export default function Nav() {
   const [session, loading] = useSession();
-  const { data, error } = useSWR("/api/subreddit/allSubReddits", fetchData);
+  const { data } = useSWR("/api/subreddit/allSubReddits", fetchData);
 
   const router = useRouter();
 
