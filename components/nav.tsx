@@ -3,31 +3,23 @@ import Select from "react-select";
 import { useSession, signIn, signOut } from "next-auth/client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
+import useSWR from "swr";
+import { fetchData } from "../utils/utils";
 
 export default function Nav() {
   const [session, loading] = useSession();
-  const [subReddits, setSubReddits] = useState([]);
+  const { data, error } = useSWR("/api/subreddit/allSubReddits", fetchData);
 
   const router = useRouter();
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
   const subToOptions = () => {
-    if (subReddits.length < 1) return;
+    if (!data) return;
 
-    const options = subReddits.map((sub) => ({
+    const options = data.map((sub) => ({
       value: sub.id,
       label: sub.name,
     }));
     return options;
-  };
-
-  const fetchData = async () => {
-    const res = await fetch("/api/subreddit/allSubReddits");
-    const subReddits = await res.json();
-    setSubReddits(subReddits);
   };
 
   return (
@@ -56,7 +48,16 @@ export default function Nav() {
       </h3>
       <div className="text-gray-700 font-bold mr-4 text-xl hover:text-indigo-200">
         {!session && <button onClick={signIn}>Login</button>}
-        {session && <button onClick={signOut}>Logout</button>}
+        {session && (
+          <button
+            onClick={() => {
+              router.push("/");
+              signOut();
+            }}
+          >
+            Logout
+          </button>
+        )}
       </div>
     </nav>
   );
