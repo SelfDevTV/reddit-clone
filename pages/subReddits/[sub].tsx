@@ -2,29 +2,30 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import Layout from "../../components/layout";
 import { Prisma, User } from "@prisma/client";
-import { useSession } from "next-auth/client"
-import Moment from 'react-moment';
-import 'moment-timezone';
+import { useSession } from "next-auth/client";
+import Moment from "react-moment";
+import "moment-timezone";
 import SubredditPost from "../../components/subredditPost";
+import useSWR from "swr";
+import { fetchData } from "../../utils/utils";
 
-type SubWithPosts = Prisma.SubredditGetPayload<{
-  include: { posts: { include: { user: true; subreddit: true } }, joinedUsers: true };
-}>;
-
-const SubReddit = ({ fullSub }: { fullSub: SubWithPosts }) => {
+const SubReddit = (props) => {
   const router = useRouter();
   const { sub } = router.query;
   const [session, loading] = useSession();
 
-
+  const { data: fullSub, error } = useSWR(
+    `/api/subreddit/findSubreddit?name=${sub}`,
+    fetchData,
+    {
+      initialData: props.fullSub,
+    }
+  );
 
   // TODO: We need to get these variables from our db
-  const joined = fullSub.joinedUsers.filter((user: User) => user.name === session.user.name).length > 0
-  const displayName = "Next.js";
-  const about = "Next.js is the React framework by Vercel.";
-  const members = 4100; // TODO: Create a helper function that transforms it into 4.1k
-  const totalPosts = 203;
-  const created = new Date();
+  const joined =
+    fullSub.joinedUsers.filter((user: User) => user.name === session?.user.name)
+      .length > 0;
 
   const dateOptions = {
     // this is for better format of the date( we use it below)
@@ -58,9 +59,9 @@ const SubReddit = ({ fullSub }: { fullSub: SubWithPosts }) => {
             <button className="w-full py-3 text-xl font-bold bg-white rounded-md shadow-sm hover:shadow-lg outline-none focus:outline-none">
               Create Post
             </button>
-            {
-              fullSub.posts.map(post => <SubredditPost post={post} />)
-            }
+            {fullSub.posts.map((post) => (
+              <SubredditPost post={post} />
+            ))}
           </div>
 
           {/* >Right Column (sidebar) */}
@@ -99,10 +100,8 @@ const SubReddit = ({ fullSub }: { fullSub: SubWithPosts }) => {
 export async function getServerSideProps(ctx) {
   //ctx.query.sub
 
-  const res = await fetch(
-    `${process.env.NEXTAUTH_URL}/api/subreddit/findSubreddit?name=${ctx.query.sub}`
-  );
-  const fullSub = await res.json();
+  const url = `${process.env.NEXTAUTH_URL}/api/subreddit/findSubreddit?name=${ctx.query.sub}`;
+  const fullSub = await fetchData(url);
 
   return {
     props: {
