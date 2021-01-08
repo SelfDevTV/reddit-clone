@@ -13,13 +13,13 @@ const SubReddit = (props) => {
   const { sub } = router.query;
   const [session] = useSession();
 
-  const { data: fullSub, error } = useSWR(
-    `/api/subreddit/findSubreddit?name=${sub}`,
-    fetchData,
-    {
-      initialData: props.fullSub,
-    }
-  );
+  const subUrl = `/api/subreddit/findSubreddit?name=${sub}`;
+
+  const { data: fullSub, error } = useSWR(subUrl, fetchData, {
+    initialData: props.fullSub,
+  });
+
+  console.log("do we have votes?", fullSub);
 
   // has the user joined the subreddit?
   const joined =
@@ -57,8 +57,13 @@ const SubReddit = (props) => {
             <button className="w-full py-3 text-xl font-bold bg-white rounded-md shadow-sm hover:shadow-lg outline-none focus:outline-none">
               Create Post
             </button>
-            {fullSub.posts.map((post) => (
-              <SubredditPost post={post} />
+            {fullSub?.posts?.map((post) => (
+              <SubredditPost
+                post={post}
+                subUrl={subUrl}
+                fullSub={fullSub}
+                key={post.id}
+              />
             ))}
           </div>
 
@@ -75,14 +80,14 @@ const SubReddit = (props) => {
                   <p className="text-sm">Members</p>
                 </div>
                 <div className="w-full">
-                  <p>{fullSub.posts.length}</p>
+                  <p>{fullSub?.posts?.length}</p>
                   <p className="text-sm">total Posts</p>
                 </div>
               </div>
               <div className="w-full h-px bg-gray-300 my-4" />
               <p className="text-md mb-4">
                 <b>Created - </b>{" "}
-                <Moment format="YYYY/MM/DD">{fullSub.createdAt}</Moment>
+                <Moment format="YYYY/MM/DD">{fullSub?.createdAt}</Moment>
               </p>
               <button className="focus:outline-none rounded-md w-full py-3 text-gray-900 font-semibold bg-green-400">
                 CREATE POST
