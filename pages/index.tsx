@@ -5,8 +5,6 @@ import Layout from "../components/layout";
 export default function Page() {
   const [session, loading] = useSession();
 
-  console.log("hi session", session);
-
   return (
     <Layout>
       {!session && (
