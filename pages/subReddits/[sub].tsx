@@ -19,7 +19,7 @@ const SubReddit = (props) => {
     initialData: props.fullSub,
   });
 
-  console.log("do we have votes?", fullSub);
+  console.log("the new votes state", fullSub.posts[0].votes);
 
   // has the user joined the subreddit?
   const joined =

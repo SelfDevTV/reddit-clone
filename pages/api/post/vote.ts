@@ -1,16 +1,11 @@
-import { PrismaClient } from "@prisma/client";
 import { getSession } from "next-auth/client";
-
-const prisma = new PrismaClient({ log: ["error"] });
+import prisma from "../../../db";
 
 const handler = async (req, res) => {
   // get post id and type from the req body
   const { postId } = req.body;
   const { type } = req.body;
   const session = await getSession({ req });
-
-  console.log("post id and type", postId, type);
-  console.log("the session, ", session);
 
   // if we dont have a session we return an error
   if (!session) {
@@ -26,23 +21,40 @@ const handler = async (req, res) => {
       },
     });
 
-    // now we check if the user has voted on this requested post and save it in variable - true or false
+    console.log("the users votes", votes);
 
-    console.log("all votes from user", votes);
+    // now we check if the user has voted on this requested post and save it in variable - true or false
 
     const hasVoted = votes.find((vote) => vote.postId === postId);
 
-    console.log("has voted?", hasVoted);
-
+    console.log("has the user voted: ", hasVoted);
     // if the user has voted - remove the vote and return the removed vote
 
     if (hasVoted) {
-      console.log("i cant be in here");
+      // if user hasVoted and the vote type is not the same - we change the type
+
+      if (hasVoted.voteType !== type) {
+        const updatedVote = await prisma.vote.update({
+          where: {
+            id: Number(hasVoted.id),
+          },
+          data: {
+            voteType: type,
+          },
+        });
+
+        console.log("updated vote", updatedVote);
+
+        return res.json(updatedVote);
+      }
+
       const deletedVote = await prisma.vote.delete({
         where: {
           id: Number(hasVoted.id),
         },
       });
+
+      console.log("deleted vote", deletedVote);
       return res.json(deletedVote);
     }
 
