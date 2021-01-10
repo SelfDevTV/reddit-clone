@@ -5,7 +5,6 @@ import { useSession } from "next-auth/client";
 import { useRouter } from "next/router";
 import { mutate } from "swr";
 import { fetchDedupe } from "fetch-dedupe";
-import { useEffect, useState } from "react";
 
 type FullPost = Prisma.PostGetPayload<{
   include: { user: true; subreddit: true; votes: true };
@@ -34,7 +33,7 @@ const SubredditPost = ({ post, subUrl, fullSub }: Props) => {
     return;
   }
 
-  const hasVoted = post.votes.find((vote) => vote.userId === session.userId);
+  const hasVoted = post.votes.find((vote) => vote.userId === session?.userId);
 
   const votePost = async (type) => {
     if (hasVoted) {
