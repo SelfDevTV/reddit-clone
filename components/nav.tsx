@@ -37,7 +37,7 @@ export default function Nav() {
         <Select
           options={subToOptions()}
           onChange={(option) => {
-            router.push(`/subReddits/${option.label}`);
+            router.push(`/r/${option.label}`);
           }}
         />
       </div>

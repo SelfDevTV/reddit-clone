@@ -1,12 +1,13 @@
 import { useRouter } from "next/router";
-import Layout from "../../components/layout";
+import Layout from "../../../components/layout";
 import { User } from "@prisma/client";
 import { useSession } from "next-auth/client";
 import Moment from "react-moment";
 import "moment-timezone";
-import SubredditPost from "../../components/subredditPost";
+import SubredditPost from "../../../components/subredditPost";
 import useSWR from "swr";
-import { fetchData } from "../../utils/utils";
+import { fetchData } from "../../../utils/utils";
+import Link from "next/link";
 
 const SubReddit = (props) => {
   const router = useRouter();
@@ -54,9 +55,11 @@ const SubReddit = (props) => {
         <div className="flex container mx-auto py-4 px-4 items-start">
           {/* Left Column (Posts) */}
           <div className="w-2/3">
-            <button className="w-full py-3 text-xl font-bold bg-white rounded-md shadow-sm hover:shadow-lg outline-none focus:outline-none">
-              Create Post
-            </button>
+            <Link href={`/r/${sub}/submit`}>
+              <a className="w-full block text-center py-3 text-xl font-bold bg-white rounded-md shadow-sm hover:shadow-lg outline-none focus:outline-none">
+                Create Post
+              </a>
+            </Link>
             {fullSub?.posts?.map((post) => (
               <SubredditPost
                 post={post}
