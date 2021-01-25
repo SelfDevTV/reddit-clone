@@ -21,3 +21,7 @@ body {
 /* Stop purging. */
 
 /* Your own custom utilities */
+
+.ql-container.ql-snow {
+  border: none !important;
+}

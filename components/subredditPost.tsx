@@ -5,6 +5,10 @@ import { useSession } from "next-auth/client";
 import { useRouter } from "next/router";
 import { mutate } from "swr";
 import { fetchDedupe } from "fetch-dedupe";
+import "react-quill/dist/quill.snow.css";
+
+const ReactQuill =
+  typeof window === "object" ? require("react-quill") : () => false;
 
 type FullPost = Prisma.PostGetPayload<{
   include: { user: true; subreddit: true; votes: true };
@@ -26,6 +30,8 @@ interface Props {
 const SubredditPost = ({ post, subUrl, fullSub }: Props) => {
   const [session, loading] = useSession();
   const router = useRouter();
+
+  console.log("current post: ", post);
 
   // if the user is not logged in - redirect to a login page
   if (!session && !loading) {
@@ -171,7 +177,12 @@ const SubredditPost = ({ post, subUrl, fullSub }: Props) => {
         <div>
           <p className="text-sm text-gray-500">Posted by u/{post.user.name}</p>
           <p className="text-3xl text-gray-900">{post.title}</p>
-          <p className="text-xl text-gray-900">{post.body}</p>
+          <ReactQuill
+            value={post.body}
+            readOnly={true}
+            theme={"snow"}
+            modules={{ toolbar: false }}
+          />
           <div>
             <p>
               {/*comment icon */} {/*comment count*/} comments
